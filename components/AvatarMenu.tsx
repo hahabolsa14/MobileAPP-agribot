@@ -47,7 +47,7 @@ export default function AvatarMenu({ currentPage = "" }: AvatarMenuProps) {
               style={styles.menuItem}
               onPress={() => {
                 setMenuVisible(false);
-                router.push("/(tabs)/profile");
+                router.push("/profile");
               }}
             >
               <Text style={styles.menuText}>Profile</Text>
@@ -57,7 +57,7 @@ export default function AvatarMenu({ currentPage = "" }: AvatarMenuProps) {
               style={styles.menuItem}
               onPress={() => {
                 setMenuVisible(false);
-                router.push("/(tabs)/settings");
+                router.push("/settings");
               }}
             >
               <Text style={styles.menuText}>Settings</Text>

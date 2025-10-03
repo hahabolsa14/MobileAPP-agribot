@@ -1,5 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -12,128 +10,110 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AvatarMenu from "../../components/AvatarMenu"; // reusable component
+import TabsHeader from "../../components/TabsHeader";
+import { submitMessage } from "../../utils/firestoreHelpers";
 import BackgroundWrapper from "../BackgroundWrapper";
 
 export default function AboutScreen() {
-  const router = useRouter();
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
 
-  // State for inputs
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-
-  const handleSubmit = () => {
-    Alert.alert("Message Sent", "Thank you for contacting us!");
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setMessage("");
+  const handleChange = (key: keyof typeof form, value: string) => {
+    setForm({ ...form, [key]: value });
   };
+
+  const handleSubmit = async () => {
+    const { firstName, lastName, email, message } = form;
+
+    if (!firstName || !lastName || !email || !message) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await submitMessage(firstName, lastName, email, message);
+      Alert.alert("Message Sent", "Thank you for contacting us!");
+      setForm({ firstName: "", lastName: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Error submitting message:", error);
+      Alert.alert("Error", "Unable to send your message. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fields: {
+    label: string;
+    key: keyof typeof form;
+    multiline?: boolean;
+    height?: number;
+    keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
+  }[] = [
+    { label: "First name", key: "firstName" },
+    { label: "Last name", key: "lastName" },
+    { label: "Email address", key: "email", keyboardType: "email-address" },
+    { label: "Your message", key: "message", multiline: true, height: 100 },
+  ];
 
   return (
     <BackgroundWrapper>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Top Navigation Bar */}
-        <View style={styles.topBar}>
-          <Ionicons name="car-sport-outline" size={28} color="black" />
+        <TabsHeader currentPage="About" />
 
-          <View style={styles.rightContainer}>
-            {/* Navigation Tabs */}
-            <View style={styles.navTabs}>
-              <TouchableOpacity
-                style={styles.tab}
-                onPress={() => router.push("/(tabs)/home")}
-              >
-                <Text style={styles.tabText}>Home</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.tabActive}>
-                <Text style={styles.tabTextActive}>About Us</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Reusable Avatar Menu */}
-            <AvatarMenu currentPage="About" />
-          </View>
-        </View>
-
-        {/* Scrollable Content */}
         <ScrollView
           style={styles.scrollContainer}
           contentContainerStyle={{ flexGrow: 1, justifyContent: "space-between" }}
         >
-          {/* Banner / Header Image */}
           <Image
             source={{ uri: "https://i.ibb.co/0Vh6nQv/field-banner.jpg" }}
             style={styles.bannerImage}
           />
 
-          {/* About Us Section */}
           <View style={styles.content}>
             <Text style={styles.title}>About Us</Text>
             <Text style={styles.paragraph}>
-              At EcoVentureBot, we are committed to revolutionizing the
-              agricultural landscape with cutting-edge autonomous technology.
+              At EcoVentureBot, we are committed to revolutionizing the agricultural landscape
+              with cutting-edge autonomous technology.
             </Text>
             <Text style={styles.paragraph}>
-              EcoVentureBot designs and develops autonomous ground vehicles
-              (AGVs) tailored for agricultural applications. Using smart navigation,
-              AI-driven analytics, and real-time data, our vehicles automate key
-              farming tasks like precision planting, irrigation, crop monitoring,
-              and soil analysis. The result? A more efficient, sustainable, and
-              cost-effective way to manage agricultural operations.
+              EcoVentureBot designs and develops autonomous ground vehicles tailored for
+              agricultural applications. Using smart navigation, AI-driven analytics, and
+              real-time data, our vehicles automate key farming tasks like precision planting,
+              irrigation, crop monitoring, and soil analysis. The result? A more efficient,
+              sustainable, and cost-effective way to manage agricultural operations.
             </Text>
           </View>
 
-          {/* Contact Us Section */}
           <View style={styles.contactContainer}>
             <Text style={styles.contactTitle}>Contact us</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>First name</Text>
-              <TextInput
-                style={styles.inputBox}
-                placeholder="Enter first name"
-                value={firstName}
-                onChangeText={setFirstName}
-              />
-            </View>
+            {fields.map((field) => (
+              <View key={field.label} style={styles.inputGroup}>
+                <Text style={styles.label}>{field.label}</Text>
+                <TextInput
+                  style={[styles.inputBox, field.height ? { height: field.height, textAlignVertical: "top" } : {}]}
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
+                  keyboardType={field.keyboardType}
+                  multiline={field.multiline}
+                  value={form[field.key]}
+                  onChangeText={(text) => handleChange(field.key, text)}
+                  editable={!loading}
+                />
+              </View>
+            ))}
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Last name</Text>
-              <TextInput
-                style={styles.inputBox}
-                placeholder="Enter last name"
-                value={lastName}
-                onChangeText={setLastName}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email address</Text>
-              <TextInput
-                style={styles.inputBox}
-                placeholder="Enter email"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Your message</Text>
-              <TextInput
-                style={[styles.inputBox, { height: 100, textAlignVertical: "top" }]}
-                placeholder="Enter your question or message"
-                multiline
-                value={message}
-                onChangeText={setMessage}
-              />
-            </View>
-
-            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.submitText}>Submit</Text>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+              disabled={loading}
+            >
+              <Text style={styles.submitText}>{loading ? "Sending..." : "Submit"}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -143,72 +123,11 @@ export default function AboutScreen() {
 }
 
 const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.9)",
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    width: "100%",
-  },
-  rightContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  navTabs: {
-    flexDirection: "row",
-    gap: 10,
-    backgroundColor: "#000",
-    borderRadius: 20,
-    paddingHorizontal: 5,
-    padding: 2,
-  },
-  tab: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-  },
-  tabActive: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-  },
-  tabText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  tabTextActive: {
-    color: "#000",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  bannerImage: {
-    width: "100%",
-    height: 160,
-    resizeMode: "cover",
-  },
-  content: {
-    paddingHorizontal: 20,
-    marginTop: 10,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#122909",
-    marginBottom: 15,
-  },
-  paragraph: {
-    fontSize: 16,
-    color: "#333",
-    lineHeight: 22,
-    marginBottom: 12,
-  },
+  scrollContainer: { flex: 1 },
+  bannerImage: { width: "100%", height: 160, resizeMode: "cover" },
+  content: { paddingHorizontal: 20, marginTop: 10 },
+  title: { fontSize: 28, fontWeight: "bold", color: "#122909", marginBottom: 15 },
+  paragraph: { fontSize: 16, color: "#333", lineHeight: 22, marginBottom: 12 },
   contactContainer: {
     flexGrow: 1,
     paddingHorizontal: 20,
@@ -222,19 +141,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
-  contactTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  inputGroup: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 5,
-  },
+  contactTitle: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  inputGroup: { marginBottom: 15 },
+  label: { fontSize: 14, fontWeight: "500", marginBottom: 5 },
   inputBox: {
     backgroundColor: "#f9f9f9",
     paddingHorizontal: 10,
@@ -243,16 +152,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-  submitButton: {
-    marginTop: 15,
-    backgroundColor: "#000",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  submitText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
+  submitButton: { marginTop: 15, backgroundColor: "#000", paddingVertical: 14, borderRadius: 8, alignItems: "center" },
+  submitText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 });

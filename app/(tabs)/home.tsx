@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AvatarMenu from "../../components/AvatarMenu"; // reusable component
+import TabsHeader from "../../components/TabsHeader";
 import BackgroundWrapper from "../BackgroundWrapper";
 
 export default function HomeScreen() {
@@ -12,74 +12,27 @@ export default function HomeScreen() {
   return (
     <BackgroundWrapper>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Top Navigation Bar */}
-        <View style={styles.topBar}>
-          <Ionicons name="car-sport-outline" size={28} color="black" />
+        <TabsHeader currentPage="Home" />
 
-          <View style={styles.rightContainer}>
-            {/* Navigation Tabs */}
-            <View style={styles.navTabs}>
-              <TouchableOpacity style={styles.tabActive}>
-                <Text style={styles.tabTextActive}>Home</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.tab}
-                onPress={() => router.push("/(tabs)/about")}
-              >
-                <Text style={styles.tabText}>About Us</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Reusable Avatar Menu */}
-            <AvatarMenu currentPage="Home" />
-          </View>
-        </View>
-
-        {/* Title */}
         <View style={styles.titleContainer}>
           <Text style={styles.title}>EcoVenture</Text>
         </View>
 
-        {/* Buttons */}
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/main/botLocation")}
-          >
-            <Ionicons
-              name="location-outline"
-              size={24}
-              color="#2e7d32"
-              style={styles.icon}
-            />
-            <Text style={styles.buttonText}>Bot Location</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/main/pathHistory")}
-          >
-            <Ionicons
-              name="time-outline"
-              size={24}
-              color="#2e7d32"
-              style={styles.icon}
-            />
-            <Text style={styles.buttonText}>Path History</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/main/mapping")}
-          >
-            <Ionicons
-              name="map-outline"
-              size={24}
-              color="#2e7d32"
-              style={styles.icon}
-            />
-            <Text style={styles.buttonText}>Mapping</Text>
-          </TouchableOpacity>
+          {[
+            { label: "Bot Location", icon: "location-outline", route: "/main/botLocation" },
+            { label: "Path History", icon: "time-outline", route: "/main/pathHistory" },
+            { label: "Mapping", icon: "map-outline", route: "/main/mapping" },
+          ].map((btn) => (
+            <TouchableOpacity
+              key={btn.label}
+              style={styles.button}
+              onPress={() => router.push(btn.route)}
+            >
+              <Ionicons name={btn.icon as any} size={24} color="#2e7d32" />
+              <Text style={styles.buttonText}>{btn.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </SafeAreaView>
     </BackgroundWrapper>
@@ -87,63 +40,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.9)",
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    width: "100%",
-    marginTop: 0,
-  },
-  rightContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  navTabs: {
-    flexDirection: "row",
-    gap: 10,
-    backgroundColor: "#000",
-    borderRadius: 20,
-    paddingHorizontal: 5,
-    padding: 2,
-  },
-  tab: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-  },
-  tabActive: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-  },
-  tabText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  tabTextActive: {
-    color: "#000",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  titleContainer: {
-    marginTop: 120,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: "bold",
-    color: "#122909",
-  },
-  buttonsContainer: {
-    marginTop: 160,
-    alignItems: "center",
-    gap: 40,
-  },
+  titleContainer: { marginTop: 120, alignItems: "center" },
+  title: { fontSize: 40, fontWeight: "bold", color: "#122909" },
+  buttonsContainer: { marginTop: 160, alignItems: "center", gap: 40 },
   button: {
     flexDirection: "row",
     alignItems: "center",
@@ -158,13 +57,5 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#000",
-    marginLeft: 10,
-  },
-  icon: {
-    marginRight: 5,
-  },
+  buttonText: { fontSize: 16, fontWeight: "600", color: "#000", marginLeft: 10 },
 });

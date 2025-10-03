@@ -1,16 +1,16 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import BackgroundWrapper from "../BackgroundWrapper";
+import BackgroundWrapper from "./BackgroundWrapper";
 
-export default function ProfileScreen() {
+export default function SettingsScreen() {
   return (
     <BackgroundWrapper>
       <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>User Profile</Text>
+        <Text style={styles.title}>Settings</Text>
         <View style={styles.content}>
           <Text style={styles.placeholderText}>
-            This is a placeholder for the user profile page.
+            This is a placeholder for the settings page.
           </Text>
         </View>
       </SafeAreaView>

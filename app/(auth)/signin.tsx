@@ -15,24 +15,16 @@ export default function SignIn() {
   const router = useRouter();
 
   const handleSignIn = async () => {
-    console.log("Sign-in button pressed");
-
     if (!email || !password) {
-      console.log("Missing email or password");
       Alert.alert("Error", "Please enter both email and password.");
       return;
     }
 
     setLoading(true);
-    console.log("Starting Firebase sign-in...");
-
     const user = await signInUser(email, password);
-
     setLoading(false);
-    console.log("Sign-in process ended");
 
     if (user) {
-      console.log("Redirecting to home page:", user.email);
       router.replace("/(tabs)/home");
     }
   };
