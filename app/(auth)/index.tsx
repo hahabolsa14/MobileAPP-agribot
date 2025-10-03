@@ -3,10 +3,9 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import BackgroundWrapper from "./BackgroundWrapper";
+import BackgroundWrapper from "../BackgroundWrapper";
 
-
-export default function Index() {
+export default function AuthIndex() {
   const router = useRouter();
 
   return (
@@ -37,8 +36,8 @@ export default function Index() {
         <View style={styles.content}>
           <Text style={styles.title}>EcoVenture</Text>
           <Text style={styles.subtitle}>
-            an autonomous ground vehicle for agricultural applications with Drawn
-            Paths for Agricultural Field Applications
+            An autonomous ground vehicle for agricultural applications with
+            drawn paths for field navigation.
           </Text>
         </View>
       </SafeAreaView>
