@@ -1,6 +1,23 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { useState, useEffect } from 'react';
 import { Alert } from "react-native";
 import { auth } from "../firebase";
+
+import { User } from "firebase/auth";
+
+export const useAuth = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return { user };
+};
 
 // Sign in helper
 export const signInUser = async (email: string, password: string) => {
