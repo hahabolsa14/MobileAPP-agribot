@@ -1,13 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState, useRef, useEffect } from "react";
-import { StyleSheet, Text, View, Dimensions, TextInput, TouchableOpacity, Alert } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AvatarMenu from "../../components/AvatarMenu";
-import BackgroundWrapper from "../BackgroundWrapper";
 import WebView from "react-native-webview";
+import TabsHeader from "../../components/TabsHeader";
 import { useAuth } from "../../utils/authHelpers";
-import { saveMapMarkers, getMapMarkers } from "../../utils/mapHelpers";
+import { getMapMarkers, saveMapMarkers } from "../../utils/mapHelpers";
+import BackgroundWrapper from "../BackgroundWrapper";
 
 interface Marker {
   lat: number;
@@ -233,34 +232,32 @@ export default function MappingPage() {
   return (
     <BackgroundWrapper>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.topBar}>
-          <Ionicons name="car-sport-outline" size={28} color="black" />
-          <View style={styles.rightContainer}>
-            <AvatarMenu currentPage="Mapping" />
-          </View>
-        </View>
+        <TabsHeader currentPage="Home" />
+
 
         <View style={styles.content}>
           <Text style={styles.title}>Field Mapping</Text>
           <View style={styles.inputContainer}>
             <View style={styles.coordinateInputs}>
               <View style={styles.inputWrapper}>
-                <Text>Latitude:</Text>
+                <Text style={styles.inputLabel}>Latitude:</Text>
                 <TextInput
                   style={styles.input}
                   value={inputLat}
                   onChangeText={setInputLat}
-                  placeholder="Enter latitude"
+                  placeholder="Enter latitude"                  
+                  placeholderTextColor="#FFFFFF"
                   keyboardType="numeric"
                 />
               </View>
               <View style={styles.inputWrapper}>
-                <Text>Longitude:</Text>
+                <Text style={styles.inputLabel}>Latitude:</Text>
                 <TextInput
                   style={styles.input}
                   value={inputLng}
                   onChangeText={setInputLng}
                   placeholder="Enter longitude"
+                  placeholderTextColor="#FFFFFF"
                   keyboardType="numeric"
                 />
               </View>
@@ -313,7 +310,7 @@ export default function MappingPage() {
 const styles = StyleSheet.create({
   inputContainer: {
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: '#000000', // black background
     borderRadius: 8,
     marginBottom: 10,
     width: '100%',
@@ -380,11 +377,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: '#000000',
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    color: '#FFFFFF'
+  },
+  inputLabel: {
+    color: '#FFFFFF', // labels white
+    fontWeight: 'bold',
+    marginBottom: 2,
   },
   mapContainer: {
     width: Dimensions.get('window').width,

@@ -11,30 +11,33 @@ export default function AuthIndex() {
   return (
     <BackgroundWrapper>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Top white header bar */}
-        <View style={styles.headerOverlay}>
-          <View style={styles.topBar}>
-            <Ionicons name="car-sport-outline" size={28} color="black" />
-            <View style={styles.authButtons}>
-              <TouchableOpacity
-                style={styles.signInButton}
-                onPress={() => router.push("/signin")}
-              >
-                <Text style={styles.signInText}>Sign in</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.registerButton}
-                onPress={() => router.push("/signup")}
-              >
-                <Text style={styles.registerText}>Register</Text>
-              </TouchableOpacity>
-            </View>
+        <View style={styles.topBar}>
+          {/* Left: App Icon + Title */}
+          <View style={styles.leftContainer}>
+            <Ionicons name="leaf-outline" size={32} color="#2e7d32" />
+            <Text style={styles.headerTitle}>AgriSafeNav</Text>
+          </View>
+
+          {/* Right: Auth Buttons */}
+          <View style={styles.rightContainer}>
+            <TouchableOpacity
+              style={styles.signInButton}
+              onPress={() => router.push("/signin")}
+            >
+              <Text style={styles.signInText}>Sign in</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.registerButton}
+              onPress={() => router.push("/signup")}
+            >
+              <Text style={styles.registerText}>Register</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Middle content */}
         <View style={styles.content}>
-          <Text style={styles.title}>EcoVenture</Text>
+          <Text style={styles.title}>AgriSafeNav</Text>
           <Text style={styles.subtitle}>
             An autonomous ground vehicle for agricultural applications with
             drawn paths for field navigation.
@@ -46,36 +49,54 @@ export default function AuthIndex() {
 }
 
 const styles = StyleSheet.create({
-  headerOverlay: {
-    backgroundColor: "rgba(255,255,255,0.9)",
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 20,
-    zIndex: 2,
-  },
   topBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "#000",       // black background
+    borderWidth: 2,                // green outline thickness
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    width: "100%",
+    zIndex: 10,
   },
-  authButtons: {
+  leftContainer: {
     flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#4CAF50",
+  },
+  rightContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   signInButton: {
-    backgroundColor: "#333",
+    backgroundColor: "#4CAF50",    // bright green for contrast
     paddingVertical: 6,
     paddingHorizontal: 14,
     borderRadius: 6,
   },
-  signInText: { color: "#fff", fontSize: 14, fontWeight: "500" },
+  signInText: { 
+    color: "#000",                 // black text on green button
+    fontSize: 14, 
+    fontWeight: "500" 
+  },
   registerButton: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#fff",       // white button
     paddingVertical: 6,
     paddingHorizontal: 14,
     borderRadius: 6,
   },
-  registerText: { color: "#000", fontSize: 14, fontWeight: "500" },
+  registerText: { 
+    color: "#000",             // dark green text to match theme
+    fontSize: 14, 
+    fontWeight: "500" 
+  },
   content: {
     marginTop: 150,
     marginHorizontal: 40,

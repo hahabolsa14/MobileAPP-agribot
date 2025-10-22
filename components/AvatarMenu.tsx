@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import React, { useState } from "react";
@@ -6,9 +7,10 @@ import { auth } from "../firebase";
 
 interface AvatarMenuProps {
   currentPage?: "Home" | "About" | string;
+  userPhotoUrl?: string; // optional user photo
 }
 
-export default function AvatarMenu({ currentPage = "" }: AvatarMenuProps) {
+export default function AvatarMenu({ currentPage = "", userPhotoUrl }: AvatarMenuProps) {
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -25,10 +27,11 @@ export default function AvatarMenu({ currentPage = "" }: AvatarMenuProps) {
     <>
       {/* Pressable Avatar */}
       <TouchableOpacity onPress={() => setMenuVisible(true)}>
-        <Image
-          source={{ uri: "https://i.pravatar.cc/100" }}
-          style={styles.avatar}
-        />
+        {userPhotoUrl ? (
+          <Image source={{ uri: userPhotoUrl }} style={styles.avatar} />
+        ) : (
+          <Ionicons name="person-circle-outline" size={32} color="#2e7d32" />
+        )}
       </TouchableOpacity>
 
       {/* Menu Modal */}
@@ -63,10 +66,7 @@ export default function AvatarMenu({ currentPage = "" }: AvatarMenuProps) {
               <Text style={styles.menuText}>Settings</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={handleLogout}
-            >
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
               <Text style={[styles.menuText, { color: "red" }]}>Logout</Text>
             </TouchableOpacity>
           </View>

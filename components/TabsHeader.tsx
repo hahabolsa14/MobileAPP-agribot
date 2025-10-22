@@ -13,27 +13,36 @@ export default function TabsHeader({ currentPage }: TabsHeaderProps) {
 
   return (
     <View style={styles.topBar}>
-      <Ionicons name="car-sport-outline" size={28} color="black" />
+      {/* App Icon + Title */}
+      <View style={styles.leftContainer}>
+        <Ionicons name="leaf-outline" size={32} color="#2e7d32" />
+        <Text style={styles.headerTitle}>AgriSafeNav</Text>
+      </View>
 
+      {/* Navigation Tabs + Avatar */}
       <View style={styles.rightContainer}>
-        {/* Navigation Tabs */}
         <View style={styles.navTabs}>
           <TouchableOpacity
             style={currentPage === "Home" ? styles.tabActive : styles.tab}
+            activeOpacity={0.7}
             onPress={() => router.push("/(tabs)/home")}
           >
-            <Text style={currentPage === "Home" ? styles.tabTextActive : styles.tabText}>Home</Text>
+            <Text style={currentPage === "Home" ? styles.tabTextActive : styles.tabText}>
+              Home
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={currentPage === "About" ? styles.tabActive : styles.tab}
+            activeOpacity={0.7}
             onPress={() => router.push("/(tabs)/about")}
           >
-            <Text style={currentPage === "About" ? styles.tabTextActive : styles.tabText}>About Us</Text>
+            <Text style={currentPage === "About" ? styles.tabTextActive : styles.tabText}>
+              About Us
+            </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Avatar Menu */}
         <AvatarMenu currentPage={currentPage} />
       </View>
     </View>
@@ -45,33 +54,52 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.9)",
+    backgroundColor: "#000",          // black background
+    borderWidth: 2,                    // green outline thickness
     paddingHorizontal: 15,
-    paddingVertical: 15,
+    paddingVertical: 10,
     width: "100%",
+    zIndex: 10,                        // ensure touches work on Android
+    overflow: "visible",
+  },
+  leftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginRight: 5,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#4CAF50",
   },
   rightContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 1,
+    marginLeft: 5,
   },
   navTabs: {
     flexDirection: "row",
-    gap: 10,
+    alignItems: "center",
     backgroundColor: "#000",
     borderRadius: 20,
     paddingHorizontal: 5,
-    padding: 2,
+    paddingVertical: 2,
   },
   tab: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    marginHorizontal: 2,
+    borderRadius: 15,
+    backgroundColor: "transparent",
   },
   tabActive: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    backgroundColor: "#fff",
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    marginHorizontal: 2,
     borderRadius: 15,
+    backgroundColor: "#fff",
   },
   tabText: {
     color: "#fff",
