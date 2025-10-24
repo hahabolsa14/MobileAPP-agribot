@@ -78,11 +78,11 @@ export default function AboutScreen() {
           <View style={styles.content}>
             <Text style={styles.title}>About Us</Text>
             <Text style={styles.paragraph}>
-              At EcoVentureBot, we are committed to revolutionizing the agricultural landscape
+              At AgriSafeNav, we are committed to revolutionizing the agricultural landscape
               with cutting-edge autonomous technology.
             </Text>
             <Text style={styles.paragraph}>
-              EcoVentureBot designs and develops autonomous ground vehicles tailored for
+              AgriSafeNav designs and develops autonomous ground vehicles tailored for
               agricultural applications. Using smart navigation, AI-driven analytics, and
               real-time data, our vehicles automate key farming tasks like precision planting,
               irrigation, crop monitoring, and soil analysis. The result? A more efficient,
