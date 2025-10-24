@@ -3,28 +3,27 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-type AuthHeaderProps = {
-  title?: string;
-  showBack?: boolean; // toggle back button
-};
+interface PageHeaderProps {
+  title: string;
+}
 
-export default function AuthHeader({ title, showBack = true }: AuthHeaderProps) {
+export default function PageHeader({ title }: PageHeaderProps) {
   const router = useRouter();
 
   return (
     <View style={styles.topBar}>
-      {/* Left: App Icon + Title */}
+      {/* Left: Leaf Icon */}
       <View style={styles.leftContainer}>
         <Ionicons name="leaf-outline" size={32} color="#2e7d32" />
-        {title && <Text style={styles.headerTitle}>{title}</Text>}
       </View>
 
+      {/* Center: Page Title */}
+      <Text style={styles.headerTitle}>{title}</Text>
+
       {/* Right: Back Button */}
-      {showBack && (
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={28} color="#4CAF50" />
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="chevron-back" size={28} color="#4CAF50" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -33,9 +32,10 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between", // left + right spacing
+    justifyContent: "space-between",
     backgroundColor: "#000",
-    borderWidth: 2,
+    borderColor: "#4CAF50",
+    borderWidth: 0.2,
     paddingHorizontal: 15,
     paddingVertical: 10,
     width: "100%",
@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   leftContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
   },
   backButton: {
     padding: 5,
@@ -53,5 +52,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#4CAF50",
+    textAlign: "center",
+    flex: 1, // allows the title to stay centered
+    marginHorizontal: 10,
   },
 });

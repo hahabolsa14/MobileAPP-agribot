@@ -39,7 +39,7 @@ export default function SignUp() {
         [
           {
             text: "OK",
-            onPress: () => router.replace("/"), // redirect to landing or login page
+            onPress: () => router.replace("/signin"), // redirect to login page
           },
         ]
       );
@@ -88,6 +88,14 @@ export default function SignUp() {
               <Text style={styles.buttonText}>Register</Text>
             )}
           </TouchableOpacity>
+
+          {/* Footer: Already have an account */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => router.replace("/signin")}>
+              <Text style={styles.loginText}>Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
     </BackgroundWrapper>
@@ -115,5 +123,21 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#000",
     fontWeight: "bold",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 15,
+    alignItems: "center",
+  },
+  footerText: {
+    color: "#aaa",
+    fontSize: 14,
+  },
+  loginText: {
+    color: "#4CAF50",
+    fontWeight: "bold",
+    fontSize: 14,
+    textDecorationLine: "underline",
   },
 });

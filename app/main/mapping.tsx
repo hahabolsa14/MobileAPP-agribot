@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import WebView from "react-native-webview";
-import TabsHeader from "../../components/TabsHeader";
+import PageHeader from "../../components/PageHeader";
 import { useAuth } from "../../utils/authHelpers";
 import { getMapMarkers, saveMapMarkers } from "../../utils/mapHelpers";
 import BackgroundWrapper from "../BackgroundWrapper";
@@ -232,11 +232,10 @@ export default function MappingPage() {
   return (
     <BackgroundWrapper>
       <SafeAreaView style={{ flex: 1 }}>
-        <TabsHeader currentPage="Home" />
+        <PageHeader title="Field Mapping" />
 
 
         <View style={styles.content}>
-          <Text style={styles.title}>Field Mapping</Text>
           <View style={styles.inputContainer}>
             <View style={styles.coordinateInputs}>
               <View style={styles.inputWrapper}>

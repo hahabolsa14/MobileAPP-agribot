@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TabsHeader from "../../components/TabsHeader";
+import PageHeader from "../../components/PageHeader";
 
 const { height } = Dimensions.get("window");
 
@@ -50,7 +50,7 @@ export default function BotLocationPage() {
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* 🧭 Header */}
-      <TabsHeader currentPage="Home" />
+      <PageHeader title="Bot Location" />
 
       <View style={styles.container}>
         {/* Spacer (10%) */}

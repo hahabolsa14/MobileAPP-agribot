@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TabsHeader from "../../components/TabsHeader"; // make sure the path is correct
+import PageHeader from "../../components/PageHeader";
 
 interface Detection {
   bbox: [number, number, number, number];
@@ -226,7 +226,7 @@ export default function AIDetectionPage() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#121212" }}>
-      <TabsHeader currentPage="Home" />
+      <PageHeader title="AI Detection" />
       <ScrollView
         contentContainerStyle={{ paddingTop: 20, paddingHorizontal: 20, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}

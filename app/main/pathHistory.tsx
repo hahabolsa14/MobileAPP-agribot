@@ -9,7 +9,7 @@ import {
   View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TabsHeader from "../../components/TabsHeader";
+import PageHeader from "../../components/PageHeader";
 
 export default function PathHistoryPage() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function PathHistoryPage() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <TabsHeader currentPage="Home" />
+      <PageHeader title="Path History" />
 
       <ScrollView 
         style={styles.scrollContent} 
