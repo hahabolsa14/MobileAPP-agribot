@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   coordinateInputs: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 30,
   },
   inputWrapper: {
     flex: 1,
@@ -400,5 +400,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
+    marginBottom: 10,
   },
 });
