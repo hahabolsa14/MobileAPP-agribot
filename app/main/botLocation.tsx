@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { Dimensions, StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Location from 'expo-location';
 import PageHeader from "../../components/PageHeader";
 
 const { height } = Dimensions.get("window");
@@ -21,8 +21,11 @@ export default function BotLocationPage() {
     lastUpdate: new Date().toLocaleTimeString(),
     status: "online",
   });
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
+    requestLocationPermission();
+    
     const interval = setInterval(() => {
       setBotLocation((prev) => ({
         ...prev,
@@ -33,6 +36,21 @@ export default function BotLocationPage() {
     }, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted') {
+        const location = await Location.getCurrentPositionAsync({});
+        setUserLocation({
+          lat: location.coords.latitude,
+          lng: location.coords.longitude,
+        });
+      }
+    } catch (error) {
+      console.error('Error getting location:', error);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -47,6 +65,22 @@ export default function BotLocationPage() {
     }
   };
 
+  const calculateDistance = () => {
+    if (!userLocation) return null;
+    
+    const R = 6371; // Earth's radius in km
+    const dLat = (botLocation.lat - userLocation.lat) * Math.PI / 180;
+    const dLon = (botLocation.lng - userLocation.lng) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(userLocation.lat * Math.PI / 180) * Math.cos(botLocation.lat * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c;
+    
+    return distance < 1 ? `${(distance * 1000).toFixed(0)}m` : `${distance.toFixed(2)}km`;
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* 🧭 Header */}
@@ -56,7 +90,7 @@ export default function BotLocationPage() {
         {/* Spacer (10%) */}
         <View style={styles.topSpacer} />
 
-        {/* Status Section (20%) */}
+        {/* Status Section */}
         <View style={styles.statusSection}>
           <View style={styles.statusHeader}>
             <View style={styles.statusIndicator}>
@@ -98,34 +132,42 @@ export default function BotLocationPage() {
                 {botLocation.lng.toFixed(6)}
               </Text>
             </View>
+            {userLocation && (
+              <View style={styles.coordinateItem}>
+                <Ionicons name="navigate" size={16} color="#4CAF50" />
+                <Text style={styles.coordinateLabel}>Distance:</Text>
+                <Text style={styles.coordinateValue}>
+                  {calculateDistance()}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
-        {/* Spacer (20%) */}
+        {/* Spacer */}
         <View style={styles.middleSpacer} />
 
-        {/* Map Section (50%) */}
+        {/* Map Placeholder Section */}
         <View style={styles.mapSection}>
-          <MapView
-            style={styles.map}
-            provider={PROVIDER_GOOGLE}
-            region={{
-              latitude: botLocation.lat,
-              longitude: botLocation.lng,
-              latitudeDelta: 0.005,
-              longitudeDelta: 0.005,
-            }}
-          >
-            <Marker
-              coordinate={{
-                latitude: botLocation.lat,
-                longitude: botLocation.lng,
-              }}
-              title="🤖 AgriSafeNav"
-              description={`Status: ${botLocation.status.toUpperCase()}\nLast Update: ${botLocation.lastUpdate}`}
-              pinColor={getStatusColor(botLocation.status)}
-            />
-          </MapView>
+          <View style={styles.mapPlaceholder}>
+            <Ionicons name="map" size={64} color="#4CAF50" />
+            <Text style={styles.mapPlaceholderTitle}>Map View</Text>
+            <Text style={styles.mapPlaceholderText}>
+              Bot Location: {botLocation.lat.toFixed(4)}, {botLocation.lng.toFixed(4)}
+            </Text>
+            {userLocation && (
+              <Text style={styles.mapPlaceholderText}>
+                Your Location: {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
+              </Text>
+            )}
+            <TouchableOpacity 
+              style={styles.refreshButton}
+              onPress={requestLocationPermission}
+            >
+              <Ionicons name="refresh" size={20} color="#fff" />
+              <Text style={styles.refreshButtonText}>Refresh Location</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -176,8 +218,39 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
-  map: {
+  mapPlaceholder: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  mapPlaceholderTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  mapPlaceholderText: {
+    fontSize: 14,
+    color: '#B0B0B0',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 20,
+    gap: 8,
+  },
+  refreshButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 
   // Status info
