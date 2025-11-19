@@ -24,7 +24,7 @@ export default function HomeScreen() {
           <View style={styles.buttonsContainer}>
             {[
               { label: "Bot Location", icon: "location-outline", route: "/main/botLocation" },
-              { label: "Path History", icon: "time-outline", route: "/main/pathHistory" },
+              // { label: "Path History", icon: "time-outline", route: "/main/pathHistory" },
               { label: "Mapping", icon: "map-outline", route: "/main/mapping" },
               { label: "AI Detection", icon: "scan-outline", route: "/main/aiDetection" },
             ].map((btn) => (

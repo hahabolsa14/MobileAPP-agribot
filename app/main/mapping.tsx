@@ -1,12 +1,13 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
-import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { StyleSheet, Text, View, Dimensions, TextInput, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import WebView from "react-native-webview";
-import PageHeader from "../../components/PageHeader";
-import { useAuth } from "../../utils/authHelpers";
-import { getMapMarkers, saveMapMarkers } from "../../utils/mapHelpers";
+import AvatarMenu from "../../components/AvatarMenu";
 import BackgroundWrapper from "../BackgroundWrapper";
+import WebView from "react-native-webview";
+import { useAuth } from "../../utils/authHelpers";
+import { saveMapMarkers, getMapMarkers } from "../../utils/mapHelpers";
 
 interface Marker {
   lat: number;
@@ -19,30 +20,16 @@ export default function MappingPage() {
   const { user } = useAuth();
   const [markers, setMarkers] = useState<Marker[]>([]);
   const webViewRef = useRef<WebView>(null);
-  const [inputLat, setInputLat] = useState('');
-  const [inputLng, setInputLng] = useState('');
-
-  const handleCoordinateSubmit = () => {
-    const lat = parseFloat(inputLat);
-    const lng = parseFloat(inputLng);
-    if (!isNaN(lat) && !isNaN(lng)) {
-      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        handleMapPress(lat, lng);
-        setInputLat('');
-        setInputLng('');
-      } else {
-        Alert.alert('Invalid Coordinates', 'Latitude must be between -90 and 90, and longitude between -180 and 180');
-      }
-    } else {
-      Alert.alert('Invalid Input', 'Please enter valid numbers for latitude and longitude');
-    }
-  };
 
   const loadMarkersFromFirebase = async () => {
-    if (!user?.uid) return;
+    if (!user?.uid) {
+      Alert.alert('Error', 'You must be logged in to view markers');
+      return;
+    }
     const loadedMarkers = await getMapMarkers(user.uid);
-    if (loadedMarkers) {  // Remove length check to handle empty arrays too
+    if (loadedMarkers) {
       setMarkers(loadedMarkers);
+      Alert.alert('Success', `Loaded ${loadedMarkers.length} marker(s)`);
       // Ensure map updates with loaded markers
       webViewRef.current?.injectJavaScript(`
         if (mapReady) {
@@ -54,48 +41,21 @@ export default function MappingPage() {
     }
   };
 
-  const saveMarkersToFirebase = async () => {
-    if (!user?.uid) {
-      Alert.alert('Error', 'You must be logged in to save markers');
-      return;
-    }
-    
-    const success = await saveMapMarkers(user.uid, markers);
-    if (success) {
-      Alert.alert('Success', 'Markers saved successfully');
-    } else {
-      Alert.alert('Error', 'Failed to save markers');
-    }
-  };
-
   const removeAllMarkers = () => {
     Alert.alert(
-      'Remove All Markers',
-      'Are you sure you want to remove all markers?',
+      'Clear Markers',
+      'Are you sure you want to clear the displayed markers?',
       [
         { text: 'Cancel', style: 'cancel' },
         { 
-          text: 'Remove All', 
+          text: 'Clear', 
           style: 'destructive',
-          onPress: async () => {
+          onPress: () => {
             setMarkers([]);
-            if (user?.uid) {
-              await saveMapMarkers(user.uid, []);
-            }
           }
         }
       ]
     );
-  };
-
-  const handleMapPress = async (lat: number, lng: number) => {
-    const newMarker = {
-      lat,
-      lng,
-      title: `Obstacle ${markers.length + 1}`
-    };
-    const updatedMarkers = [...markers, newMarker];
-    setMarkers(updatedMarkers);
   };
 
   const injectMarkersToMap = () => {
@@ -218,11 +178,7 @@ export default function MappingPage() {
           };
 
           map.on('click', function(e) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              type: 'mapClick',
-              lat: e.latlng.lat,
-              lng: e.latlng.lng
-            }));
+            // Click handler disabled - map is view-only
           });
         </script>
       </body>
@@ -232,44 +188,22 @@ export default function MappingPage() {
   return (
     <BackgroundWrapper>
       <SafeAreaView style={{ flex: 1 }}>
-        <PageHeader title="Field Mapping" />
-
+        <View style={styles.topBar}>
+          <Ionicons name="car-sport-outline" size={28} color="black" />
+          <View style={styles.rightContainer}>
+            <AvatarMenu currentPage="Mapping" />
+          </View>
+        </View>
 
         <View style={styles.content}>
+          <Text style={styles.title}>Field Mapping</Text>
           <View style={styles.inputContainer}>
-            <View style={styles.coordinateInputs}>
-              <View style={styles.inputWrapper}>
-                <Text style={styles.inputLabel}>Latitude:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={inputLat}
-                  onChangeText={setInputLat}
-                  placeholder="Enter latitude"                  
-                  placeholderTextColor="#FFFFFF"
-                  keyboardType="numeric"
-                />
-              </View>
-              <View style={styles.inputWrapper}>
-                <Text style={styles.inputLabel}>Latitude:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={inputLng}
-                  onChangeText={setInputLng}
-                  placeholder="Enter longitude"
-                  placeholderTextColor="#FFFFFF"
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.addButton} onPress={handleCoordinateSubmit}>
-                <Text style={styles.buttonText}>Add Marker</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.saveButton} onPress={saveMarkersToFirebase}>
-                <Text style={styles.buttonText}>Save All</Text>
+              <TouchableOpacity style={styles.loadButton} onPress={loadMarkersFromFirebase}>
+                <Text style={styles.buttonText}>Show Latest Markers</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.removeButton} onPress={removeAllMarkers}>
-                <Text style={styles.buttonText}>Remove All</Text>
+                <Text style={styles.buttonText}>Clear Markers</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -288,16 +222,6 @@ export default function MappingPage() {
                   injectMarkersToMap();
                 }
               }}
-              onMessage={(event) => {
-                try {
-                  const data = JSON.parse(event.nativeEvent.data);
-                  if (data.type === 'mapClick') {
-                    handleMapPress(data.lat, data.lng);
-                  }
-                } catch (error) {
-                  console.error('Error parsing message:', error);
-                }
-              }}
             />
           </View>
         </View>
@@ -308,57 +232,37 @@ export default function MappingPage() {
 
 const styles = StyleSheet.create({
   inputContainer: {
-    padding: 10,
-    backgroundColor: '#000000', // black background
-    borderRadius: 8,
-    marginBottom: 10,
+    padding: 12,
+    backgroundColor: '#1E1E1E',
+    borderRadius: 12,
+    marginBottom: 15,
     width: '100%',
-    elevation: 2,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+    borderWidth: 1,
+    borderColor: '#333333',
+  },
+  loadButton: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: 'center',
   },
   removeButton: {
     backgroundColor: '#f44336',
     padding: 10,
-    borderRadius: 4,
-    flex: 1,
-    alignItems: 'center',
-  },
-  coordinateInputs: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 30,
-  },
-  inputWrapper: {
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 8,
-    marginTop: 4,
-  },
-  addButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 4,
-    flex: 1,
-    alignItems: 'center',
-  },
-  saveButton: {
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    borderRadius: 4,
+    borderRadius: 8,
     flex: 1,
     alignItems: 'center',
   },
   buttonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 14,
   },
   topBar: {
     flexDirection: "row",
@@ -376,18 +280,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: '#000000',
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    color: '#FFFFFF'
-  },
-  inputLabel: {
-    color: '#FFFFFF', // labels white
-    fontWeight: 'bold',
-    marginBottom: 2,
   },
   mapContainer: {
     width: Dimensions.get('window').width,
@@ -400,6 +297,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
-    marginBottom: 10,
   },
 });

@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
@@ -88,20 +87,57 @@ export default function AIDetectionPage() {
     setUploadProgress(10);
 
     try {
-      const base64Image = await FileSystem.readAsStringAsync(selectedImage, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      // Use FormData to send the image
+      const formData = new FormData();
+      const uriParts = selectedImage.split('.');
+      const fileType = uriParts[uriParts.length - 1];
+      
+      formData.append('file', {
+        uri: selectedImage,
+        name: `photo.${fileType}`,
+        type: `image/${fileType}`,
+      } as any);
+
       setUploadProgress(40);
 
-      const apiResponse = await fetch("http://192.168.56.1:8000/detect_base64", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image }),
-      });
+      // Try multiple API endpoints
+      const endpoints = [
+        "http://10.0.2.2:8000/detect",             // Android emulator localhost
+        "http://localhost:8000/detect",            // Direct localhost
+        "http://192.168.68.105:8000/detect",       // Your network IP
+      ];
+
+      let apiResponse = null;
+      let lastError: string = "";
+
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`Trying endpoint: ${endpoint}`);
+          apiResponse = await fetch(endpoint, {
+            method: "POST",
+            body: formData,
+            headers: {
+              'Accept': 'application/json',
+            },
+          });
+          
+          if (apiResponse.ok) {
+            console.log(`Success with endpoint: ${endpoint}`);
+            break;
+          }
+        } catch (err) {
+          const errorMsg = err instanceof Error ? err.message : String(err);
+          console.log(`Failed with ${endpoint}:`, errorMsg);
+          lastError = errorMsg;
+          continue;
+        }
+      }
 
       setUploadProgress(80);
 
-      if (!apiResponse.ok) throw new Error(`API Error: ${apiResponse.status}`);
+      if (!apiResponse || !apiResponse.ok) {
+        throw new Error(lastError || "Backend server not reachable");
+      }
 
       const results = await apiResponse.json();
       processRealObstructionResults(results);
@@ -109,10 +145,11 @@ export default function AIDetectionPage() {
       Alert.alert("Success", "Obstruction analysis complete!");
       setUploadProgress(100);
     } catch (error) {
-      console.error("Detection error:", error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error("Detection error:", errorMsg);
       Alert.alert(
-        "Detection Error",
-        "Failed to process the image. Switching to demo mode."
+        "Backend Not Available",
+        `Using demo mode. To use real detection:\n\n1. Start backend: cd backend && python app.py\n2. Reload the app\n\nError: ${errorMsg}`
       );
       await simulateDetection();
       processDemoObstructionResults();
