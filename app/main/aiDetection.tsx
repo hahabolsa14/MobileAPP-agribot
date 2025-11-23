@@ -105,6 +105,7 @@ export default function AIDetectionPage() {
         "http://10.0.2.2:8000/detect",             // Android emulator localhost
         "http://localhost:8000/detect",            // Direct localhost
         "http://192.168.68.105:8000/detect",       // Your network IP
+        "http://172.30.15.16:8000/detect",          // wifi tip address
       ];
 
       let apiResponse = null;
